@@ -19,16 +19,26 @@ document.addEventListener("DOMContentLoaded", function () {
     let sum = data.reduce((a, b) => a + b, 0);
     let mean = sum / data.length;
     let variance =
-      data.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) /
+      data.reduce((sum, value) => sum + Math.pow(value - mean, 2), 0) /
       data.length;
     let stdDev = Math.sqrt(variance);
-    return { mean: mean.toFixed(2), stdDev: stdDev.toFixed(2) };
+    return {
+      mean: mean.toFixed(2),
+      stdDev: stdDev.toFixed(2),
+      min: Math.min(...data),
+      max: Math.max(...data),
+    };
   }
 
   let stats = calculateStats(trendData);
-  document.getElementById(
-    "stats"
-  ).innerHTML = `Mean: ${stats.mean}, Standard Deviation: ${stats.stdDev}`;
+  document.getElementById("stats").innerHTML = `
+      <div class="stats-box">
+          <p><strong>Mean:</strong> ${stats.mean}</p>
+          <p><strong>Standard Deviation:</strong> ${stats.stdDev}</p>
+          <p><strong>Min Cases:</strong> ${stats.min}</p>
+          <p><strong>Max Cases:</strong> ${stats.max}</p>
+      </div>
+  `;
 
   new Chart(document.getElementById("trendChart"), {
     type: "line",
@@ -38,15 +48,29 @@ document.addEventListener("DOMContentLoaded", function () {
         {
           label: "Disease Trend",
           data: trendData,
-          borderColor: "blue",
-          fill: false,
-          tension: 0.1,
+          borderColor: "#4CAF50",
+          backgroundColor: "rgba(76, 175, 80, 0.2)",
+          borderWidth: 2,
+          pointBackgroundColor: "#4CAF50",
+          pointBorderColor: "#4CAF50",
+          pointRadius: 5,
+          fill: true,
+          tension: 0.4,
         },
       ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: { color: "#333", font: { size: 14 } },
+        },
+      },
+      scales: {
+        x: { ticks: { color: "#333" } },
+        y: { ticks: { color: "#333" } },
+      },
     },
   });
 });
